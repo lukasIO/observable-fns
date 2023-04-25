@@ -1,23 +1,20 @@
 {
-  "name": "observable-fns",
-  "version": "0.6.1",
+  "name": "obsrvbl",
+  "version": "0.1.4",
   "description": "Light-weight observable implementation and utils written in TypeScript. Based on zen-observable.",
-  "author": "Andy Wermke (https://github.com/andywer)",
+  "author": "lukasIO, Original Author: Andy Wermke (https://github.com/andywer)",
   "license": "MIT",
-  "repository": "github:andywer/observable-fns",
-  "module": "./dist.esm/index.js",
+  "repository": "github:lukasio/observable-fns",
+  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+  "type": "module",
   "sideEffects": [
-    "**/_symbols.js"
+    "**/symbols.js"
   ],
   "scripts": {
-    "prebuild": "rimraf dist/ dist.esm/",
-    "build": "run-s build:cjs build:esm",
-    "build:cjs": "tsc",
-    "build:esm": "tsc -p ./tsconfig.esm.json",
-    "create-entrypoints": "rimraf *.js *.d.ts && node ./scripts/create-entrypoints.js",
-    "test": "ava",
-    "posttest": "tslint --project .",
-    "prepare": "run-s build create-entrypoints"
+    "prebuild": "rimraf dist/",
+    "build": "tsc -p ./tsconfig.json",
+    "test": "ava"
   },
   "devDependencies": {
     "ava": "^3.15.0",

@@ -3,17 +3,16 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "declaration": true,
-    "target": "es2015",
-    "module": "commonjs",
+    "target": "es6",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "lib": ["es2015"],
-    "outDir": "dist",
-    "strict": true
+    "lib": ["ESNext", "DOM"],
+    "outDir": "./dist",
+    "strict": true,
+    "declarationDir": "./dist",
+    "sourceMap": true
   },
-  "include": [
-    "./src/index.ts",
-    "./types/common.d.ts"
-  ],
+  "include": ["./src/index.ts", "./types/common.d.ts"],
   "ts-node": {
     "files": true
   }

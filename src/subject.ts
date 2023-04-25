@@ -1,4 +1,4 @@
-import Observable, { SubscriptionObserver } from "./observable"
+import Observable, { SubscriptionObserver } from "./observable.js";
 
 // TODO: This observer iteration approach looks inelegant and expensive
 // Idea: Come up with super class for Subscription that contains the
@@ -14,32 +14,32 @@ import Observable, { SubscriptionObserver } from "./observable"
  * `Observable.from(mySubject)` to not allow other code to mutate.
  */
 class MulticastSubject<T> extends Observable<T> {
-  private _observers: Set<SubscriptionObserver<T>> = new Set()
+  private _observers: Set<SubscriptionObserver<T>> = new Set();
 
   constructor() {
-    super(observer => {
-      this._observers.add(observer)
-      return () => this._observers.delete(observer)
-    })
+    super((observer) => {
+      this._observers.add(observer);
+      return () => this._observers.delete(observer);
+    });
   }
 
   next(value: T) {
     for (const observer of this._observers) {
-      observer.next(value)
+      observer.next(value);
     }
   }
 
   error(error: any) {
     for (const observer of this._observers) {
-      observer.error(error)
+      observer.error(error);
     }
   }
 
   complete() {
     for (const observer of this._observers) {
-      observer.complete()
+      observer.complete();
     }
   }
 }
 
-export default MulticastSubject
+export default MulticastSubject;

@@ -1,4 +1,4 @@
-import { Observable } from "./observable"
+import { Observable } from "./observable.js";
 
 /**
  * Creates an observable that yields a new value every `period` milliseconds.
@@ -6,13 +6,13 @@ import { Observable } from "./observable"
  * immediately, but after the first interval.
  */
 export default function interval(period: number) {
-  return new Observable<number>(observer => {
-    let counter = 0
+  return new Observable<number>((observer) => {
+    let counter = 0;
 
     const handle = setInterval(() => {
-      observer.next(counter++)
-    }, period)
+      observer.next(counter++);
+    }, period);
 
-    return () => clearInterval(handle)
-  })
+    return () => clearInterval(handle);
+  });
 }

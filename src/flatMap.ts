@@ -1,7 +1,7 @@
-import { AsyncSerialScheduler } from "./_scheduler"
-import { isAsyncIterator, isIterator } from "./_util"
-import Observable, { ObservableLike } from "./observable"
-import unsubscribe from "./unsubscribe"
+import { AsyncSerialScheduler } from "./_scheduler.js";
+import { isAsyncIterator, isIterator } from "./_util.js";
+import Observable, { ObservableLike } from "./observable.js";
+import unsubscribe from "./unsubscribe.js";
 
 /**
  * Maps the values emitted by another observable. In contrast to `map()`
@@ -11,35 +11,41 @@ import unsubscribe from "./unsubscribe"
  * values. To be applied to an input observable using `pipe()`.
  */
 function flatMap<In, Out>(
-  mapper: (input: In) => Promise<Out[]> | AsyncIterableIterator<Out> | IterableIterator<Out> | Out[]
+  mapper: (
+    input: In
+  ) =>
+    | Promise<Out[]>
+    | AsyncIterableIterator<Out>
+    | IterableIterator<Out>
+    | Out[]
 ) {
   return (observable: ObservableLike<In>): Observable<Out> => {
-    return new Observable<Out>(observer => {
-      const scheduler = new AsyncSerialScheduler(observer)
+    return new Observable<Out>((observer) => {
+      const scheduler = new AsyncSerialScheduler(observer);
 
       const subscription = observable.subscribe({
         complete() {
-          scheduler.complete()
+          scheduler.complete();
         },
         error(error) {
-          scheduler.error(error)
+          scheduler.error(error);
         },
         next(input) {
           scheduler.schedule(async (next) => {
-            const mapped = await mapper(input)
+            const mapped = await mapper(input);
             if (isIterator(mapped) || isAsyncIterator(mapped)) {
               for await (const element of mapped) {
-                next(element)
+                next(element);
               }
             } else {
-              mapped.map(output => next(output))
+              mapped.map((output) => next(output));
             }
-          })
-        }
-      })
-      return () => unsubscribe(subscription)
-    })
-  }
+          });
+        },
+      });
+      return () => unsubscribe(subscription);
+    });
+  };
 }
 
-export default flatMap
+export default flatMap;

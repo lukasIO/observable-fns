@@ -1,6 +1,6 @@
-import { AsyncSerialScheduler } from "./_scheduler"
-import Observable, { ObservableLike } from "./observable"
-import unsubscribe from "./unsubscribe"
+import { AsyncSerialScheduler } from "./_scheduler.js";
+import Observable, { ObservableLike } from "./observable.js";
+import unsubscribe from "./unsubscribe.js";
 
 /**
  * Filters the values emitted by another observable.
@@ -10,27 +10,27 @@ function filter<Out, In extends Out>(
   test: (input: In) => Promise<boolean> | boolean
 ) {
   return (observable: ObservableLike<In>): Observable<Out> => {
-    return new Observable<Out>(observer => {
-      const scheduler = new AsyncSerialScheduler(observer)
+    return new Observable<Out>((observer) => {
+      const scheduler = new AsyncSerialScheduler(observer);
 
       const subscription = observable.subscribe({
         complete() {
-          scheduler.complete()
+          scheduler.complete();
         },
         error(error) {
-          scheduler.error(error)
+          scheduler.error(error);
         },
         next(input) {
-          scheduler.schedule(async next => {
+          scheduler.schedule(async (next) => {
             if (await test(input)) {
-              next(input)
+              next(input);
             }
-          })
-        }
-      })
-      return () => unsubscribe(subscription)
-    })
-  }
+          });
+        },
+      });
+      return () => unsubscribe(subscription);
+    });
+  };
 }
 
-export default filter
+export default filter;

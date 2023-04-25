@@ -1,8 +1,6 @@
-export {}
-
+export {};
 declare global {
   interface SymbolConstructor {
-    readonly observable: symbol
+    readonly observable: symbol;
   }
 }
-

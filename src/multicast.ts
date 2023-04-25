@@ -1,6 +1,6 @@
-import Observable, { ObservableLike } from "./observable"
-import Subject from "./subject"
-import unsubscribe from "./unsubscribe"
+import Observable, { ObservableLike } from "./observable.js";
+import Subject from "./subject.js";
+import unsubscribe from "./unsubscribe.js";
 
 // TODO: Subject already creates additional observables "under the hood",
 //       now we introduce even more. A true native MulticastObservable
@@ -22,32 +22,34 @@ import unsubscribe from "./unsubscribe"
  * source observable when its last own subscriber unsubscribed.
  */
 function multicast<T>(coldObservable: ObservableLike<T>): Observable<T> {
-  const subject = new Subject<T>()
+  const subject = new Subject<T>();
 
-  let sourceSubscription: ReturnType<ObservableLike<T>["subscribe"]> | undefined
-  let subscriberCount = 0
+  let sourceSubscription:
+    | ReturnType<ObservableLike<T>["subscribe"]>
+    | undefined;
+  let subscriberCount = 0;
 
-  return new Observable<T>(observer => {
+  return new Observable<T>((observer) => {
     // Init source subscription lazily
     if (!sourceSubscription) {
-      sourceSubscription = coldObservable.subscribe(subject)
+      sourceSubscription = coldObservable.subscribe(subject);
     }
 
     // Pipe all events from `subject` into this observable
-    const subscription = subject.subscribe(observer)
-    subscriberCount++
+    const subscription = subject.subscribe(observer);
+    subscriberCount++;
 
     return () => {
-      subscriberCount--
-      subscription.unsubscribe()
+      subscriberCount--;
+      subscription.unsubscribe();
 
       // Close source subscription once last subscriber has unsubscribed
       if (subscriberCount === 0) {
-        unsubscribe(sourceSubscription)
-        sourceSubscription = undefined
+        unsubscribe(sourceSubscription);
+        sourceSubscription = undefined;
       }
-    }
-  })
+    };
+  });
 }
 
-export default multicast
+export default multicast;

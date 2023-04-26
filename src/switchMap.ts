@@ -5,6 +5,19 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
   return (source: ObservableLike<In>) =>
     new Observable<Out>((subscriber) => {
       let innerSubscriber: Subscription<Out> | null = null;
+      let innerObservable: Observable<Out>;
+
+      // Whether or not the source subscription has completed
+      let isComplete = false;
+
+      const checkCompleted = () =>
+        isComplete && !innerSubscriber && subscriber.complete();
+      const cleanup = () => {
+        console.trace("cleanup");
+        innerSubscriber?.unsubscribe();
+        unsubscribe(outerSubscriber);
+        subscriber.complete();
+      };
 
       const outerSubscriber = source.subscribe({
         start(sub) {
@@ -13,20 +26,28 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
           return sub;
         },
         next(x) {
-          innerSubscriber = mapper(x).subscribe((val) => {
-            subscriber.next(val);
+          innerSubscriber?.unsubscribe();
+          innerObservable = mapper(x);
+          innerSubscriber = innerObservable.subscribe({
+            next(x) {
+              subscriber.next(x);
+            },
+            complete() {
+              console.log("inner subscriber completed");
+              innerSubscriber = null;
+              checkCompleted();
+            },
           });
         },
         complete() {
-          innerSubscriber?.unsubscribe();
+          isComplete = true;
+          console.log("outer subscriber completed");
+          checkCompleted();
         },
       });
-      return () => {
-        if (innerSubscriber) {
-          unsubscribe(innerSubscriber);
-        }
-        unsubscribe(outerSubscriber);
-      };
+      // return () => {
+      //   cleanup();
+      // };
     });
 }
 

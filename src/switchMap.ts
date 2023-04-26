@@ -5,7 +5,6 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
   return (source: ObservableLike<In>) =>
     new Observable<Out>((subscriber) => {
       let innerSubscriber: Subscription<Out> | null = null;
-      let innerObservable: Observable<Out>;
 
       // Whether or not the source subscription has completed
       let isComplete = false;
@@ -20,10 +19,9 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
       const outerSubscriber = source.subscribe({
         next(x) {
           innerSubscriber?.unsubscribe();
-          innerObservable = mapper(x);
-          innerSubscriber = innerObservable.subscribe({
-            next(x) {
-              subscriber.next(x);
+          innerSubscriber = mapper(x).subscribe({
+            next(innerVal) {
+              subscriber.next(innerVal);
             },
             complete() {
               innerSubscriber = null;

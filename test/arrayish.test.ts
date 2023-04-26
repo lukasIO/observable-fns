@@ -75,7 +75,7 @@ describe("pipe tests", () => {
   });
 
   it("switchMap() works", async (t) => {
-    const switchObservable = new Observable((subscriber) => {
+    const switchObservable = new Observable<number>((subscriber) => {
       setTimeout(() => {
         subscriber.next(1);
       }, 1);
@@ -88,12 +88,11 @@ describe("pipe tests", () => {
       }, 3);
     }).pipe(
       switchMap((val) => {
-        console.log("new observable of", Math.pow(val, 2));
-        return Observable.from([Math.pow(val, 2)]);
+        return Observable.from([val * 2, Math.pow(val, 2)]);
       })
     );
     await t
       .expect(await completionWithValues(switchObservable))
-      .toMatchObject([1, 4, 9]);
+      .toMatchObject([2, 1, 4, 4, 6, 9]);
   });
 });

@@ -13,10 +13,8 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
       const checkCompleted = () =>
         isComplete && !innerSubscriber && subscriber.complete();
       const cleanup = () => {
-        console.trace("cleanup");
         innerSubscriber?.unsubscribe();
         unsubscribe(outerSubscriber);
-        subscriber.complete();
       };
 
       const outerSubscriber = source.subscribe({
@@ -33,7 +31,6 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
               subscriber.next(x);
             },
             complete() {
-              console.log("inner subscriber completed");
               innerSubscriber = null;
               checkCompleted();
             },
@@ -41,13 +38,12 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
         },
         complete() {
           isComplete = true;
-          console.log("outer subscriber completed");
           checkCompleted();
         },
       });
-      // return () => {
-      //   cleanup();
-      // };
+      return () => {
+        cleanup();
+      };
     });
 }
 

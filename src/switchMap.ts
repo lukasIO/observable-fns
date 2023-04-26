@@ -18,11 +18,6 @@ function switchMap<In, Out>(mapper: (value: In) => Observable<Out>) {
       };
 
       const outerSubscriber = source.subscribe({
-        start(sub) {
-          // Cancel the previous inner subscription if there was one
-          innerSubscriber?.unsubscribe();
-          return sub;
-        },
         next(x) {
           innerSubscriber?.unsubscribe();
           innerObservable = mapper(x);
